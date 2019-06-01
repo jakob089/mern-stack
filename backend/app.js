@@ -10,7 +10,11 @@ var mongoose = require('mongoose');
 
 
 var app = express();
-// mongoose.connect('mongodb+srv://baotq610:mydarling6@shop-yikai.mongodb.net/shop?retryWrites=true', {useNewUrlParser: true});
+app.use(express.static("frontend/build"));
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 mongoose.connect('mongodb+srv://baotq610:mydarling6@shop-yikai.mongodb.net/shop?retryWrites=true&w=majority', {useNewUrlParser: true}, function(err, db){
   if (err) {
     console.log('Unable to connect to the Database. Please restart the server. Error:', err);
@@ -19,10 +23,17 @@ mongoose.connect('mongodb+srv://baotq610:mydarling6@shop-yikai.mongodb.net/shop?
   }
 })
 
+if(process.env.NODE_ENV === "production"){
+  const path = require('path');
+  app.get("/*", (req, res)=>{
+    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
+  })  
+}
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+
+
+
+
 
 app.use(logger('dev'));
 app.use(express.json());
